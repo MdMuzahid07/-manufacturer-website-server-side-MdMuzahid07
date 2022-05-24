@@ -16,16 +16,41 @@ app.use(express.json());
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.5yfca.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-  const collection = client.db("test").collection("devices");
-
-  console.log("DB connected?")
 
 
+const run = async () => {
 
-  client.close();
-});
+  console.log("Db connected?")
 
+  try {
+
+
+
+    await client.connect();
+
+    const productCollection = client.db("allproducts").collection("products");
+
+
+
+    app.get('/product', async(req, res) => {
+      const result = await productCollection.find({}).toArray();
+      res.send(result);
+    })
+
+
+
+
+
+
+
+  }
+  finally {
+
+  }
+
+}
+
+run().catch(console.dir);
 
 
 
