@@ -29,21 +29,39 @@ const run = async () => {
     await client.connect();
 
     const productCollection = client.db("allproducts").collection("products");
+    const orderCollection = client.db("allorders").collection("orders");
 
 
 
-    app.get('/product', async(req, res) => {
+
+    // to get all product
+    app.get('/product', async (req, res) => {
       const result = await productCollection.find({}).toArray();
       res.send(result);
     })
 
-    app.get('/product/:id', async(req,res) => {
+
+    // to get product by id
+    app.get('/product/:id', async (req, res) => {
       const id = req.params;
-      const query = {_id: ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await productCollection.findOne(query);
       res.send(result)
     })
 
+    // to get all orders
+    app.get('/order', async (req, res) => {
+      const result = await orderCollection.find({}).toArray();
+      res.send(result);
+    })
+
+
+    // to post purchase order to database
+    app.post('/order', async (req, res) => {
+      const data = req.body;
+      const result = await orderCollection.insertOne(data);
+      res.send(result);
+    })
 
 
 
@@ -61,10 +79,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', async(req, res) => {
-    res.send('Server running?')
+app.get('/', async (req, res) => {
+  res.send('Server running?')
 })
 
 app.listen(port, () => {
-    console.log('Server running on port :', port)
+  console.log('Server running on port :', port)
 })
