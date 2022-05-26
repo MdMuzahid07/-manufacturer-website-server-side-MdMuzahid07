@@ -40,10 +40,17 @@ const run = async () => {
       res.send(result);
     })
 
+    // to add product on mongoDB
+    app.post('/product', async (req, res) => {
+      const data = req.body;
+      const result = await productCollection.insertOne(data);
+      res.send(result);
+    })
+
 
     // to get product by id
     app.get('/product/:id', async (req, res) => {
-      const id = req.params;
+      const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await productCollection.findOne(query);
       res.send(result)
@@ -53,6 +60,14 @@ const run = async () => {
     app.get('/order', async (req, res) => {
       const result = await orderCollection.find({}).toArray();
       res.send(result);
+    })
+
+    // to get order by id
+    app.get('/order/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.findOne(query);
+      res.send(result)
     })
 
 
