@@ -82,7 +82,7 @@ const run = async () => {
 
 
     // to update payment info
-    app.patch('/order/:id', async(res,res) => {
+    app.patch('/order/:id', async(req,res) => {
       const id= req.params.id;
       const payment = req.body;
       const filter = {_id: ObjectID(id)};
