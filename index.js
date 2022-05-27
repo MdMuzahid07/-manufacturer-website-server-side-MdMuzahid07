@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 require("dotenv").config();
 const cors = require('cors');
+// const jwt = require('jsonwebtoken')
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
@@ -35,6 +36,9 @@ const run = async () => {
 
 
 
+    app.put
+
+
 
     // to get all product
     app.get('/product', async (req, res) => {
@@ -58,6 +62,14 @@ const run = async () => {
       res.send(result)
     })
 
+    // to delete a product
+    app.delete('/product/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productCollection.deleteOne(query);
+      res.send(result)
+    })
+
     // to get all orders
     app.get('/order', async (req, res) => {
       const result = await orderCollection.find({}).toArray();
@@ -72,20 +84,37 @@ const run = async () => {
       res.send(result)
     })
 
+    // to delete a order by id
+    app.delete('/order/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.send(result)
+    })
+
 
     // to post purchase order to database
     app.post('/order', async (req, res) => {
       const data = req.body;
+      // const query = {productId: data.productId, name: data.name}
+
+      // console.log(query)
+      // const exists = await orderCollection.findOne(query);
+      // if(exists) {
+      //   return res.send({success: false, order: exists})
+      // }
+
       const result = await orderCollection.insertOne(data);
       res.send(result);
     })
 
 
+
     // to update payment info
-    app.patch('/order/:id', async(req,res) => {
-      const id= req.params.id;
+    app.patch('/order/:id', async (req, res) => {
+      const id = req.params.id;
       const payment = req.body;
-      const filter = {_id: ObjectID(id)};
+      const filter = { _id: ObjectID(id) };
       const updatedDoc = {
         $set: {
           paid: true,
@@ -95,39 +124,30 @@ const run = async () => {
 
       const result = await orderPaymentCollections.insertOne(payment);
       const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
-      res.send(updatedDoc);
+      res.send(updatedOrder);
 
     })
 
-    // about payment , stripe backend config
-
-    // app.post('/create-payment-intent', async(req, res) => {
-    //   const order = req.body;
-    //   const price = order.price;
-    //   const amount = price * 100;
-
-    //   const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: amount,
-    //     currency: 'usd',
-    //     payment_method_types:['card']
-    //   });
-
-    //   res.send({clientSecret: paymentIntent.client_secret})
-    // })
+    // stripe backend config
 
     app.post('/create-payment-intent', async (req, res) => {
       const order = req.body;
       const price = order.price;
       const amount = price * 100;
+
       const paymentIntent = await stripe.paymentIntents.create({
-          amount: amount,
-          currency: 'usd',
-          payment_method_types: ['card']
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
       });
 
       res.send({ clientSecret: paymentIntent.client_secret })
+    })
 
-  });
+
+
+
+
 
 
 
