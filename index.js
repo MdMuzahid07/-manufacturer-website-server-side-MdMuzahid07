@@ -33,10 +33,23 @@ const run = async () => {
     const productCollection = client.db("allproducts").collection("products");
     const orderCollection = client.db("allorders").collection("orders");
     const orderPaymentCollections = client.db("allpayments").collection("payment");
+    const userCollections = client.db("allusers").collection("users");
 
 
 
-    app.put
+    // make or update user
+    app.put('/user/:email', async(req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = {email: email};
+      const options = {upsert: true};
+      const updatedDoc = {
+        $set: user
+      };
+
+      const result = await userCollections.updateOne(filter, updatedDoc, options);
+      res.send(result);
+    })
 
 
 
@@ -103,6 +116,7 @@ const run = async () => {
       // if(exists) {
       //   return res.send({success: false, order: exists})
       // }
+      // try to make it better ###################################################
 
       const result = await orderCollection.insertOne(data);
       res.send(result);
