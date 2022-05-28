@@ -53,6 +53,15 @@ const run = async () => {
     const userCollections = client.db("allusers").collection("users");
 
 
+    // is admin
+    app.get('/admin/:email', async(req, res) => {
+      const email = req.params.email;
+      const user = await userCollections.findOne({email: email});
+      const isAdmin = user.role === 'admin';
+      res.send(isAdmin);
+    })
+
+
 
 
     // to make admin
