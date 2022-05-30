@@ -51,12 +51,13 @@ const run = async () => {
     const orderCollection = client.db("allorders").collection("orders");
     const orderPaymentCollections = client.db("allpayments").collection("payment");
     const userCollections = client.db("allusers").collection("users");
+    const reviewCollection = client.db("allRatings").collection("ratings")
 
 
     // is admin
-    app.get('/admin/:email', async(req, res) => {
+    app.get('/admin/:email', async (req, res) => {
       const email = req.params.email;
-      const user = await userCollections.findOne({email: email});
+      const user = await userCollections.findOne({ email: email });
       const isAdmin = user.role === 'admin';
       res.send(isAdmin);
     })
@@ -195,6 +196,20 @@ const run = async () => {
       // try to make it better ###################################################
 
       const result = await orderCollection.insertOne(data);
+      res.send(result);
+    })
+
+    // to post ratings on database
+    app.post('/review', async (req, res) => {
+      const data = req.body;
+      const result = await reviewCollection.insertOne(data);
+      res.send(result);
+    })
+
+
+    // to get all review 
+    app.get('/review', async (req, res) => {
+      const result = await reviewCollection.find({}).toArray();
       res.send(result);
     })
 
